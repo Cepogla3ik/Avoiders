@@ -1,0 +1,11 @@
+{
+  "compact": true,
+  "controlFlowFlattening": true,
+  "controlFlowFlatteningThreshold": 0.5,
+  "numbersToExpressions": true,
+  "simplify": true,
+  "stringArray": true,
+  "stringArrayEncoding": ["base64"],
+  "stringArrayThreshold": 0.75,
+  "unicodeEscapeSequence": false
+}
