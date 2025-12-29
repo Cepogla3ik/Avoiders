@@ -39,12 +39,12 @@ class Zone {
 
         ctx.strokeStyle = zoneStrokeColor;
         ctx.lineWidth = zoneStrokeWidth;
-        
+
         const offset = zoneStrokeWidth / 2;
         ctx.strokeRect(
-          drawX + offset, 
-          drawY + offset, 
-          sqrScale - zoneStrokeWidth, 
+          drawX + offset,
+          drawY + offset,
+          sqrScale - zoneStrokeWidth,
           sqrScale - zoneStrokeWidth
         );
       }
@@ -57,7 +57,13 @@ new Zone("area", 12, 2, 40, 24);
 new Zone("safe", 52, 2, 10, 24);
 
 class Player {
-  constructor({ id, username, x, y, color }) {
+  constructor({
+    id,
+    username,
+    x,
+    y,
+    color
+  }) {
     this.id = id;
     this.username = username;
     this.x = x;
@@ -85,15 +91,15 @@ class Player {
   }
 
   update(deltaTime) {
-  if (this.targetX !== undefined && this.targetY !== undefined) {
-    const dx = this.targetX - this.x;
-    const dy = this.targetY - this.y;
-    
-    const smoothing = 15;
-    this.x += dx * smoothing * deltaTime;
-    this.y += dy * smoothing * deltaTime;
+    if (this.targetX !== undefined && this.targetY !== undefined) {
+      const dx = this.targetX - this.x;
+      const dy = this.targetY - this.y;
+
+      const smoothing = 15;
+      this.x += dx * smoothing * deltaTime;
+      this.y += dy * smoothing * deltaTime;
+    }
   }
-}
 }
 
 const clientPlayers = {};
@@ -182,32 +188,24 @@ function gameLoop(currentTime) {
       clientPlayers[id].draw(ctx);
     }
 
-    if (playerToCursorX !== 0 || playerToCursorY !== 0) {
-      ctx.beginPath();
-      ctx.strokeStyle = 'red';
-      ctx.lineWidth = 3;
-      ctx.lineCap = 'round';
-
-      ctx.moveTo(myPlayer.x, myPlayer.y);
-
-      const worldMouseX = playerToCursorX - cameraX;
-      const worldMouseY = playerToCursorY - cameraY;
-
-      ctx.lineTo(worldMouseX, worldMouseY);
-      ctx.stroke();
-    }
-
     ctx.restore();
   }
 
   requestAnimationFrame(gameLoop);
 }
 
+let isClientChatting = false;
 const keys = {};
 let mouseClick = false;
-window.addEventListener('keydown', (e) => { keys[e.code] = true; });
-window.addEventListener('keyup', (e) => { keys[e.code] = false; });
-window.addEventListener("click", () => { mouseClick = !mouseClick });
+document.addEventListener('keydown', (e) => {
+  keys[e.code] = true;
+});
+document.addEventListener('keyup', (e) => {
+  keys[e.code] = false;
+});
+canvas.addEventListener("click", () => {
+  mouseClick = !mouseClick
+});
 
 setInterval(() => {
   if (mouseClick) {
@@ -219,15 +217,13 @@ setInterval(() => {
       targetY: worldMouseY,
       keys: keys
     });
-  } 
-  else if (Object.values(keys).includes(true)) {
+  } else if (Object.values(keys).includes(true) && !isClientChatting) {
     socket.emit("player-keyboard-move", keys);
   }
 }, 15);
 
-socket.on("client-logined", () => {
-  console.log("From game.js: Client logined");
 
+socket.on("client-logined", () => {
   document.addEventListener("contextmenu", event => {
     event.preventDefault();
   });
@@ -236,9 +232,84 @@ socket.on("client-logined", () => {
   canvas.style.display = "block";
   canvas.height = window.innerHeight;
   canvas.width = (window.innerHeight / 588) * 1044;
+
+  const chatContainerElement = document.createElement("div");
+  chatContainerElement.classList.add("chat-container");
+  chatContainerElement.style.left = `${((window.innerWidth - canvas.width) / 2) + 20}px`;
+  const chatMessagesElement = document.createElement("div");
+  chatMessagesElement.classList.add("chat-log");
+  const chatInputElement = document.createElement("input");
+  chatInputElement.classList.add("chat-input");
+  chatInputElement.maxLength = 80;
+  chatInputElement.placeholder = "Enter to chat";
+
+  document.body.appendChild(chatContainerElement);
+  chatContainerElement.appendChild(chatMessagesElement);
+  chatContainerElement.appendChild(chatInputElement);
+
+  chatInputElement.addEventListener("focus", () => isClientChatting = true);
+  chatInputElement.addEventListener("blur", () => isClientChatting = false);
+  document.addEventListener("keydown", e => {
+    if (e.code === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      const message = chatInputElement.value.trim();
+      if (isClientChatting && message !== "") {
+        socket.emit("chat-message", {
+          msg: message,
+          user: clientPlayers[socket.id].username
+        });
+        chatInputElement.value = "";
+        chatInputElement.blur();
+      } else {
+        isClientChatting ? chatInputElement.blur() : chatInputElement.focus();
+      }
+    }
+  });
+
+  socket.on("chat-new-message", data => {
+    const chatMessageElement = document.createElement("div");
+    const messageTagSpanElement = document.createElement("span");
+    chatMessageElement.classList.add("chat-message");
+    switch (data.rank) {
+      case "server":
+        messageTagSpanElement.textContent = "[Server]";
+        messageTagSpanElement.classList.add("server-tag");
+        break;
+      case "dev":
+        messageTagSpanElement.textContent = "[Dev]";
+        messageTagSpanElement.classList.add("dev-tag");
+        break;
+      case "sr-mod":
+        messageTagSpanElement.textContent = "[Sr. Mod]";
+        messageTagSpanElement.classList.add("sr-mod-tag");
+        break;
+      case "mod":
+        messageTagSpanElement.textContent = "[Mod]";
+        messageTagSpanElement.classList.add("mod-tag");
+        break;
+      case "jr-mod":
+        messageTagSpanElement.textContent = "[Jr. Mod]";
+        messageTagSpanElement.classList.add("jr-mod-tag");
+        break;
+      case "supporter":
+        messageTagSpanElement.textContent = "[Supporter]";
+        messageTagSpanElement.classList.add("supporter-tag");
+        break;
+      case "player":
+        messageTagSpanElement.textContent = "";
+        break;
+    }
+    chatMessageElement.textContent = `${data.user}: ${data.msg}`;
+    chatMessagesElement.appendChild(chatMessageElement);
+    chatMessageElement.prepend(messageTagSpanElement);
+    chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
+  });
+
   window.addEventListener("resize", () => {
     canvas.height = window.innerHeight;
     canvas.width = (window.innerHeight * 1044) / 588;
+
+    chatContainerElement.style.left = `${((window.innerWidth - canvas.width) / 2) + 15}px`;
   });
 
   requestAnimationFrame(gameLoop);

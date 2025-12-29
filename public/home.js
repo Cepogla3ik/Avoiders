@@ -13,13 +13,19 @@ socket.on('message', (data) => {
     console.log('Server:', data);
 });
 
-// Слушаем, если ник занят (приходит от сервера после emit('register'))
 socket.on("user-already-registered-error", () => {
-    showErrorStyles(1);
-    formAuthenticationMessagesElement.textContent = "This username already exists";
+  showErrorStyles(1);
+  formAuthenticationMessagesElement.textContent = "This username already exists";
+});
+socket.on("forbidden-nickname-reg", () => {
+  showErrorStyles(1);
+  formAuthenticationMessagesElement.textContent = "You can't use this nickname";
+});
+socket.on("login-error-user-ingame", () => {
+  showErrorStyles(1);
+  formAuthenticationMessagesElement.textContent = "User already in game";
 });
 
-// НОВОЕ: Слушаем успешную регистрацию (нужно добавить socket.emit('registration-success') в server.js)
 socket.on("registration-success", () => {
     formAuthenticationMessagesElement.classList.remove("show-authentication-errors-1", "show-authentication-errors-2");
     formAuthenticationMessagesElement.classList.add("show-authentication-succesful");
@@ -27,9 +33,7 @@ socket.on("registration-success", () => {
     formAuthenticationMessagesElement.textContent = "Registration successful!";
 });
 
-// Слушатели для ЛОГИНА (теперь они не дублируются при каждом клике)
 socket.on("client-logined", () => {
-    // Очищаем поля и удаляем меню
     homeUsernameInputElement.value = "";
     homePasswordInputElement.value = "";
     homeRepasswordInputElement.value = "";
@@ -60,19 +64,15 @@ homeRegisterButtonElement.addEventListener("click", () => {
     
     const authMessages = [];
 
-    // 1. Проверяем только то, что можем проверить БЕЗ сервера
     if (!username) authMessages.push("Username is required");
     if (!password) authMessages.push("Password is required"); 
     if (password.length < 8) authMessages.push("Password must be at least 8 characters");
     if (password !== repassword) authMessages.push("Passwords do not match");
 
     if (authMessages.length === 0) {
-        // 2. Если локально всё ок — отправляем серверу. 
-        // Мы НЕ пишем "Success" сразу, ждем ответа от socket.on("registration-success")
         socket.emit('register', { username, password });
         console.log("Registration request sent...");
     } else {
-        // Показываем ошибки валидации (длина, совпадение паролей)
         showErrorStyles(authMessages.length);
         formAuthenticationMessagesElement.textContent = authMessages.join(".\n");
         [homeUsernameInputElement, homePasswordInputElement, homeRepasswordInputElement].forEach(input => input.blur());
@@ -84,7 +84,6 @@ homeLoginButtonElement.addEventListener("click", () => {
     const password = homePasswordInputElement.value.trim();
 
     if (username && password) {
-        // Просто отправляем данные. Ответ обработают слушатели socket.on вверху файла
         socket.emit("login", { username, password });
     } else {
         showErrorStyles(1);
@@ -92,7 +91,6 @@ homeLoginButtonElement.addEventListener("click", () => {
     }
 });
 
-// ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ (чтобы не дублировать код стилей)
 function showErrorStyles(count) {
     formAuthenticationMessagesElement.classList.remove("show-authentication-succesful");
     formAuthenticationMessagesElement.style.color = "hsl(5 60% 40%)";
