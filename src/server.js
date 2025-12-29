@@ -109,7 +109,8 @@ io.on('connection', (socket) => {
           username: data.username,
           password: hashedPassword,
           createdAt: new Date(),
-          rank: "player"
+          rank: "player",
+          inGame: false
         });
 
         socket.emit('registration-success');
@@ -158,11 +159,13 @@ io.on('connection', (socket) => {
 
         if (isMatch && !alreadyInGame) {
           socket.emit("client-logined");
+          await db.collection('users').updateOne({ username: data.username }, { $set: { inGame: true } });
           players[socket.id] = {
             id: socket.id,
             x: 150,
             y: 250,
             username: data.username,
+            inGame: true,
             rank: user.rank,
             color: "hsl(265 45% 45%)"
           };
@@ -310,10 +313,16 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('disconnect', () => {
-    console.log(`Client disconnected: ${socket.id}`);
-    delete players[socket.id];
-    io.emit('player-disconnected', socket.id);
+  socket.on('disconnect', async () => {
+    const player = players[socket.id];
+    if (player) {
+      if (db) {
+        await db.collection('users').updateOne({ username: player.username }, { $set: { inGame: false } });
+      }
+      delete players[socket.id];
+      io.emit('player-disconnected', socket.id);
+      console.log(`User ${player.username} disconnected (${socket.id})`);
+    }
   });
 });
 

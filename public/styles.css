@@ -297,7 +297,7 @@ form {
   font-size: 16px;
   font-weight: 400;
   font-family: sans-serif;
-  color: hsl(270 20% 5% / 0.9);
+  color: hsl(265 50% 65% / 0.9);
   white-space: normal;
   overflow-wrap: break-word;
   word-wrap: break-word;
@@ -348,7 +348,7 @@ form {
 }
 .sr-mod-tag {
   font-weight: 400;
-  background: linear-gradient(135deg, hsl(225 80% 47.5%), hsl(205 90% 65%), hsl(215 85% 50%));
+  background: linear-gradient(135deg, hsl(225 80% 45%), hsl(210 80% 50%), hsl(220 85% 47.5%));
   background-size: 300% 300%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -386,8 +386,9 @@ form {
 .dev-tag, .sr-mod-tag, .mod-tag, .jr-mod-tag, .supporter-tag {
   display: inline-flex;
   vertical-align: middle;
-  font-size: 16px;
+  font-size: 16.5px;
   margin-right: 3px;
+  padding-bottom: 4px;
   align-items: center;
   justify-content: center;
 }
