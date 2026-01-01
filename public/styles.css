@@ -260,6 +260,8 @@ form {
   width: 280px;
   height: 240px;
   background-color: hsl(270 10% 30% / 0.85);
+  max-width: 550px;
+  max-height: 500px;
   border-radius: 8px;
 }
 .chat-log {
@@ -287,6 +289,22 @@ form {
     background-color: hsl(270 17% 37.5% / 0.6);
   }
 }
+.chat-drag-to-resize {
+  position: absolute;
+  z-index: 500;
+  bottom: 35px;
+  right: 5px;
+  background-color: hsl(270 12.5% 25% / 0.45);
+  border-radius: 14px;
+  opacity: 0.4;
+  cursor: grab;
+
+  &:hover {
+    background-color: hsl(270 12.5% 22.5% / 0.5);
+    box-shadow: 0 0 6px 1px hsl(270 10% 60% / 0.15);
+    opacity: 0.75;
+  }
+}
 .chat-message {
   position: relative;
   display: block;
@@ -312,11 +330,46 @@ form {
   background-color: hsl(270 15% 30% / 0.7);
   outline: none;
   padding-left: 4.5px;
+  color: hsl(265 40% 55% / 0.9);
+  font-family: sans-serif;
   border: 3px solid hsl(270 15% 22.5% / 0.8);
 
   &::placeholder {
     color: hsl(265 25% 15%);
   }
+}
+.additional-information-popup {
+  position: absolute;
+  font-size: 17px;
+  font-weight: 500;
+  font-family: sans-serif;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  line-height: 1.25;
+  pointer-events: none;
+  user-select: none;
+}
+.additional-information-join {
+  position: relative;
+  display: block;
+  color: hsl(150 45% 42.5% / 0.85);
+  transition: opacity 2.5s ease;
+}
+.additional-information-disconnect {
+  position: relative;
+  display: block;
+  color: hsl(350 45% 42.5% / 0.85);
+  transition: opacity 2.5s ease;
+}
+.additional-information-mute {
+  position: relative;
+  display: block;
+  font-family: Verdana;
+  font-weight: 500;
+  color: hsl(20 65% 42.5% / 0.85);
+  transition: opacity 2s ease-in-out;
 }
 
 
@@ -335,6 +388,7 @@ form {
   -webkit-text-fill-color: transparent;
   display: inline-block; 
   vertical-align: middle;
+  padding-bottom: 4px;
   animation: shiftingGradient 8s ease-in-out infinite;
 }
 .dev-tag {

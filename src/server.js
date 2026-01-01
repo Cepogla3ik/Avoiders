@@ -36,31 +36,49 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
 const players = {};
+const enemies = {
+  "e1": { id: "e1", x: 550, y: 400, radius: 17, speed: 2, dirX: 1, dirY: 1, type: "normal" },
+  "e2": { id: "e2", x: 550, y: 400, radius: 17, speed: 5, dirX: 1, dirY: -1, type: "normal" },
+  "e3": { id: "e3", x: 550, y: 400, radius: 17, speed: 4, dirX: -1, dirY: 1, type: "normal" },
+  "e4": { id: "e4", x: 550, y: 400, radius: 24, speed: 3, dirX: -1, dirY: -1, type: "normal" }
+};
+
+setInterval(() => {
+  for (let id in enemies) {
+    let enemy = enemies[id];
+    
+    let nextX = enemy.x + enemy.speed * enemy.dirX;
+    if (isPlayerValid(nextX, enemy.y, enemy.radius)) {
+      enemy.x = nextX;
+    } else {
+      enemy.dirX *= -1;
+    }
+
+    let nextY = enemy.y + enemy.speed * enemy.dirY;
+    if (isPlayerValid(enemy.x, nextY, enemy.radius)) {
+      enemy.y = nextY;
+    } else {
+      enemy.dirY *= -1;
+    }
+
+    for (let playerId in players) {
+      let player = players[playerId];
+      const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y);
+      if (dist < player.radius + enemy.radius) {
+        player.x = 150; 
+        player.y = 250;
+      }
+    }
+  }
+}, 15);
 
 setInterval(() => {
   io.emit("update-players", players);
+  io.emit("update-enemies", enemies);
 }, 30);
 
-const sqrScale = 33;
-const allZones = [{
-    x: 2 * sqrScale,
-    y: 2 * sqrScale,
-    w: 10 * sqrScale,
-    h: 24 * sqrScale
-  },
-  {
-    x: 12 * sqrScale,
-    y: 2 * sqrScale,
-    w: 40 * sqrScale,
-    h: 24 * sqrScale
-  },
-  {
-    x: 52 * sqrScale,
-    y: 2 * sqrScale,
-    w: 10 * sqrScale,
-    h: 24 * sqrScale
-  }
-];
+const sqrScale = 36;
+const allZones = [];
 
 function isPointInAnyZone(x, y) {
   return allZones.some(zone => {
@@ -72,15 +90,31 @@ function isPointInAnyZone(x, y) {
 }
 
 function isPlayerValid(x, y, radius) {
-  return isPointInAnyZone(x - radius, y) &&
-    isPointInAnyZone(x + radius, y) &&
-    isPointInAnyZone(x, y - radius) &&
-    isPointInAnyZone(x, y + radius);
+  const pointsCount = 64;
+  const bufferRadius = radius - 0.2; 
+  
+  for (let i = 0; i < pointsCount; i++) {
+    const angle = (i * 2 * Math.PI) / pointsCount;
+    const pointX = x + Math.cos(angle) * bufferRadius;
+    const pointY = y + Math.sin(angle) * bufferRadius;
+
+    if (!isPointInAnyZone(pointX, pointY)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 io.on('connection', (socket) => {
   console.log(`Client connected: ${socket.id}`);
   socket.emit('message', "Welcome to the server!");
+
+  socket.on("zones-build", (zone) => {
+    for (const char in zone) {
+      zone[char] *= sqrScale;
+    }
+    allZones.push(zone);
+  });
 
   // --- Registration ---
   socket.on('register', async (data) => {
@@ -165,11 +199,26 @@ io.on('connection', (socket) => {
             x: 150,
             y: 250,
             username: data.username,
+            isAlive: true, // later check, is player dead before login
             inGame: true,
             rank: user.rank,
             color: "hsl(265 45% 45%)"
           };
+          socket.on("enemy-created", enemy => {
+            enemies[enemy.id] = {
+              id: enemy.id,
+              x: enemy.x,
+              y: enemy.y,
+              type: enemy.type,
+              radius: enemy.radius,
+              speed: enemy.speed
+            }
+          });
 
+          io.emit("player-logined", {
+            id: socket.id,
+            username: data.username
+          });
           console.log(`User ${data.username} has entered the game`);
         } else if (!isMatch && !alreadyInGame) {
           socket.emit("client-login-error-psw");
@@ -191,14 +240,38 @@ io.on('connection', (socket) => {
       speed *= 0.5;
     }
 
-    const radius = 17.5;
+    const radius = 17;
+
+    if (!player.moveQueueX) player.moveQueueX = [];
+    if (!player.moveQueueY) player.moveQueueY = [];
+
+    const keyA = keys['KeyA'] || keys['ArrowLeft'];
+    const keyD = keys['KeyD'] || keys['ArrowRight'];
+
+    if (keyA && !player.moveQueueX.includes('A')) player.moveQueueX.push('A');
+    if (!keyA) player.moveQueueX = player.moveQueueX.filter(k => k !== 'A');
+    if (keyD && !player.moveQueueX.includes('D')) player.moveQueueX.push('D');
+    if (!keyD) player.moveQueueX = player.moveQueueX.filter(k => k !== 'D');
+
+    const keyW = keys['KeyW'] || keys['ArrowUp'];
+    const keyS = keys['KeyS'] || keys['ArrowDown'];
+
+    if (keyW && !player.moveQueueY.includes('W')) player.moveQueueY.push('W');
+    if (!keyW) player.moveQueueY = player.moveQueueY.filter(k => k !== 'W');
+    if (keyS && !player.moveQueueY.includes('S')) player.moveQueueY.push('S');
+    if (!keyS) player.moveQueueY = player.moveQueueY.filter(k => k !== 'S');
 
     let dx = 0;
     let dy = 0;
-    if (keys['KeyW'] || keys['ArrowUp']) dy -= speed;
-    if (keys['KeyS'] || keys['ArrowDown']) dy += speed;
-    if (keys['KeyA'] || keys['ArrowLeft']) dx -= speed;
-    if (keys['KeyD'] || keys['ArrowRight']) dx += speed;
+
+    const lastX = player.moveQueueX[player.moveQueueX.length - 1];
+    const lastY = player.moveQueueY[player.moveQueueY.length - 1];
+
+    if (lastX === 'A') dx = -speed;
+    else if (lastX === 'D') dx = speed;
+
+    if (lastY === 'W') dy = -speed;
+    else if (lastY === 'S') dy = speed;
 
     if (dx !== 0) {
       if (isPlayerValid(player.x + dx, player.y, radius)) {
@@ -237,41 +310,45 @@ io.on('connection', (socket) => {
     const player = players[socket.id];
     if (!player) return;
 
-    const targetX = data.targetX;
-    const targetY = data.targetY;
-
-    const dx = targetX - player.x;
-    const dy = targetY - player.y;
-
+    const dx = data.targetX - player.x;
+    const dy = data.targetY - player.y;
     const distance = Math.hypot(dx, dy);
 
     if (distance < 8) return;
 
     let speed = 7.5;
-    if (distance < 100) {
-      speed = 7.5 * (distance / 100);
-    }
+    if (distance < 100) speed = 7.5 * (distance / 100);
 
     const keys = data.keys || {};
-    if (keys['ShiftLeft'] || keys['ShiftRight'] || keys['Shift']) {
-      speed *= 0.5;
-    }
+    if (keys['ShiftLeft'] || keys['ShiftRight'] || keys['Shift']) speed *= 0.5;
 
-    const moveX = (dx / distance) * speed;
-    const moveY = (dy / distance) * speed;
+    const vx = (dx / distance) * speed;
+    const vy = (dy / distance) * speed;
+    const radius = 17;
 
-    const radius = 17.5;
+    const moveStrict = (amtX, amtY) => {
+      const steps = Math.max(Math.abs(amtX), Math.abs(amtY));
+      const stepX = amtX / steps;
+      const stepY = amtY / steps;
 
-    if (isPlayerValid(player.x + moveX, player.y + moveY, radius)) {
-      player.x += moveX;
-      player.y += moveY;
-    } else {
-      if (isPlayerValid(player.x + moveX, player.y, radius)) {
-        player.x += moveX;
-      } else if (isPlayerValid(player.x, player.y + moveY, radius)) {
-        player.y += moveY;
+      for (let i = 0; i < steps; i++) {
+        let nextX = player.x + stepX;
+        let nextY = player.y + stepY;
+
+        if (isPlayerValid(nextX, nextY, radius)) {
+          player.x = nextX;
+          player.y = nextY;
+        } else if (isPlayerValid(nextX, player.y, radius)) {
+          player.x = nextX;
+        } else if (isPlayerValid(player.x, nextY, radius)) {
+          player.y = nextY;
+        } else {
+          break;
+        }
       }
-    }
+    };
+
+    moveStrict(vx, vy);
   });
 
   const spamData = {
@@ -282,12 +359,19 @@ io.on('connection', (socket) => {
 
   socket.on("chat-message", (data) => {
     if (!data || !data.msg) return;
-    
+
+    const player = players[socket.id];
+    if (!player) return;
+
     const now = performance.now();
 
     if (now < spamData.muteUntil) {
       const timeLeft = Math.ceil((spamData.muteUntil - now) / 1000);
-      socket.emit("chat-new-message", { user: "", msg: `MUTE - ${timeLeft}s left`, rank: "server" });
+      socket.emit("chat-new-message", {
+        user: "",
+        msg: `MUTE - ${timeLeft}s left`,
+        rank: "server"
+      });
       return;
     }
 
@@ -296,18 +380,31 @@ io.on('connection', (socket) => {
     spamData.lastMessageTime = now;
     spamData.points++;
 
-    if (spamData.points > 4) {
+    const durationS = 30;
+    if (spamData.points > 4 && player.rank !== "dev" && player.rank !== "sr-mod" && player.rank !== "mod") {
       spamData.muteUntil = now + (30 * 1000);
-      socket.emit("chat-new-message", { user: "", msg: "You were muted for 30s", rank: "server" });
+      socket.emit("chat-new-message", {
+        user: "",
+        msg: "You were muted for 30s (Spam)",
+        rank: "server"
+      });
+      socket.emit("mod-action", {
+        mute: {
+          duration: durationS,
+          from: "auto-mute",
+          reason: "Spam",
+          target: socket.id
+        }
+      });
       return;
     }
 
-    const player = players[socket.id];
     if (player) {
       io.emit("chat-new-message", {
         user: player.username,
         msg: data.msg.substring(0, 80),
         rank: player.rank,
+        isDead: !player.isAlive,
         time: Date.now()
       });
     }
@@ -317,7 +414,13 @@ io.on('connection', (socket) => {
     const player = players[socket.id];
     if (player) {
       if (db) {
-        await db.collection('users').updateOne({ username: player.username }, { $set: { inGame: false } });
+        await db.collection('users').updateOne({
+          username: player.username
+        }, {
+          $set: {
+            inGame: false
+          }
+        });
       }
       delete players[socket.id];
       io.emit('player-disconnected', socket.id);
