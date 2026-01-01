@@ -33,7 +33,7 @@ async function connectToDB() {
 connectToDB();
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, '../dist')));
 
 const players = {};
 const enemies = {
@@ -429,9 +429,9 @@ io.on('connection', (socket) => {
   });
 });
 
-app.get('/', (req, res) => {
+/* app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public', 'avoiders.html'));
-});
+}); */
 
 http.listen(port, () => {
   console.log(`🚀 Server was launched: http://localhost:${port}`);

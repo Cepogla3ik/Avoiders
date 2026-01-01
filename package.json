@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
-    "build": "npm install"
+    "start": "node server/server.js",
+    "dev": "vite",
+    "build": "npm i && vite build"
   },
   "engines": {
     "node": ">=20.x"
@@ -18,7 +19,9 @@
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "mongodb": "^7.0.0",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.3",
+    "vite": "^7.3.0"
   },
   "devDependencies": {
     "javascript-obfuscator": "^5.1.0"
