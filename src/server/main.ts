@@ -1,8 +1,6 @@
-/* import Enemy from "../src/Enemy";
-import { getRandomInt } from "../src/utils";
-*/
+console.log("TODO");
 
-import 'dotenv/config';
+/*import 'dotenv/config';
 import express, { type Application } from 'express';
 import path from 'path';
 import { createServer, Server as HttpServer } from 'http';
@@ -76,4 +74,4 @@ for (let n = 1; n <= 15; n++) {
  // ?
 Enemy.allEnemies.forEach(enemy => {
   enemies[enemy.id] = enemy;
-});
+});*/

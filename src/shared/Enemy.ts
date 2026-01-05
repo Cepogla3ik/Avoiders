@@ -1,4 +1,4 @@
-import { getRandomInt } from "./utils";
+import { getRandomInt } from "./util/random.js";
 import Zone from "./Zone";
 type Direction = 1 | -1;
 

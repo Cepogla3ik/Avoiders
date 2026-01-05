@@ -1,4 +1,4 @@
-import { socket } from "./main.js";
+import { socket } from "./client/main.js";
 
 export default class Zone {
   static allZones: Zone[] = [];
