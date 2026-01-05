@@ -1,5 +1,3 @@
-import { socket } from "./client/main.js";
-
 export default class Zone {
   static allZones: Zone[] = [];
 
@@ -17,23 +15,6 @@ export default class Zone {
     this.posXZone = posXZone;
     this.posYZone = posYZone;
     this.scale = 36;
-
-    Zone.allZones.push(this);
-    if (typeof socket !== 'undefined' && socket.connected) {
-        this.sendToServer();
-    } else {
-        socket.on('connect', () => this.sendToServer());
-    }
-  }
-
-  // method ?
-  sendToServer() {
-    socket.emit("zones-build", {
-      x: this.posXZone,
-      y: this.posYZone,
-      w: this.widthZone,
-      h: this.heightZone
-    });
   }
 
   draw(ctx: CanvasRenderingContext2D) {
