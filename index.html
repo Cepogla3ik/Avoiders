@@ -1,35 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Avoiders</title>
-  <link rel="icon" type="image/png" href="avo.png">
-</head>
-<body>
-  <div id="home">
-    <div id="home-title">Avoiders</div>
-    <div id="home-authentication-container">
-      <form>
-        <div id="form-authentication-messages"></div>
-        <div id="home-inputs-container">
-          <input id="home-username" placeholder="Username" type="text" autocomplete="username" maxlength="18" />
-          <input id="home-password" placeholder="Password" type="password" autocomplete="current-password" maxlength="64" />
-          <input id="home-repassword" placeholder="Confirm password" type="password" autocomplete="current-password" maxlength="64" />
-        </div>
-        <div id="home-buttons-container">
-          <button id="home-login" type="button">Login</button>
-          <button id="home-register" type="button">Register</button>
-        </div>
-      </form>
-    </div>
-    <div id="additions-container">
-      <div id="changelog-container">
-        <div id="changelog-title">Changelog</div>
-      </div>
-    </div>
-  </div>
-  <canvas id="canvas"></canvas>
-  <script type="module" src="src/client/main.ts"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="avo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Avoiders</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/client/main.ts"></script>
+  </body>
 </html>
