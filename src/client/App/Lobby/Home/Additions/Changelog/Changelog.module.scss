@@ -1,0 +1,24 @@
+.changelog-container {
+  width: 400px;
+  height: 350px;
+  border-radius: 30px;
+  border: 6px solid hsl(275 25% 25%);
+  background-color: hsl(265 20% 20% / 0.5);
+}
+
+.changelog-title {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+  background-color: hsl(270 25% 25% / 0.1);
+  border-bottom: 5px solid hsl(275 25% 25%);
+  border-radius: 22.5px 22.5px 0 0;
+  color: hsl(275 40% 45%);
+  font-size: 28px;
+  font-weight: 500;
+  font-family: sans-serif;
+  user-select: none;
+}

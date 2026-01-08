@@ -1,0 +1,12 @@
+.cursor {
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 35px 20px hsl(270 45% 65% / 0.3);
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1250;
+}
