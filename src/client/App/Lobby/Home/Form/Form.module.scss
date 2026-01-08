@@ -71,6 +71,26 @@
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+
+  > div {
+    position: relative;
+    width: 100%;
+
+    &::before {
+      position: absolute;
+      left: 12px;
+      top: 0;
+      content: "";
+      background-color: hsl(270 20% 40%);
+      width: 75px;
+      height: 3px;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    &:has(input:focus)::before {
+      opacity: 1;
+    }
+  }
   
   input {
     width: 100%;
@@ -83,18 +103,42 @@
     border-radius: 12px;
     padding-left: 8px;
     user-select: none;
+    caret-color: hsl(270 35% 27.5%);
     transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   
     &::placeholder {
-      color: hsl(270 25% 17.5%);
+      color: hsl(270 25% 20%);
       font-weight: 500;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: color 0.25s ease-in-out;
     }
     &:focus {
       border-color: hsl(270 30% 50%);
       box-shadow: 0 0 8px 1px hsl(270 30% 50%);
     }
+    &:focus ~ .form-item-label {
+      left: 17px;
+      top: -10px;
+      font-size: 14px;
+      color: hsl(270 65% 60%);
+      opacity: 1;
+    }
+    &:focus::placeholder {
+      color: transparent;
+    }
   }
+}
+.form-item-label {
+  position: absolute;
+  left: 16px;
+  top: 0;
+  color: hsl(270 25% 20%);
+  font-size: 16px;
+  font-weight: 500;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  user-select: none;
+  opacity: 0;
+  transition: top 0.3s ease-in-out, left 0.3s ease-in-out, opacity 0.4s ease-in-out, color 0.3s ease-in-out;
 }
 
 
