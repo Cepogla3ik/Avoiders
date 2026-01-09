@@ -1,7 +1,7 @@
 import express from "express";
 import { createServer } from "http";
 import path from "path";
-import { Server } from "socket.io";
+import { WebSocketServer } from "ws";
 import GameWorld from "./GameWorld/GameWorld.ts";
 import Player from "./GameWorld/entities/Player/Player.ts";
 import { fileURLToPath } from "url";
@@ -12,28 +12,23 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const http = createServer(app);
-const io = new Server(http, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
-});
+const httpServer = createServer(app);
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../../dist')));
 
+const wss = new WebSocketServer({ server: httpServer, path: "/ws" });
 
 const gameWorld = new GameWorld();
 gameWorld.run();
 
-io.on("connect", (socket) => {
-  const player = new Player(socket, gameWorld);
+wss.on("connection", (ws) => {
+  const player = new Player(ws, gameWorld);
 
   // socket.on("input", () => player.onInput());
-  socket.on("disconnect", () => player.onDisconnect());
+  ws.on("close", () => player.onDisconnect());
 })
 
-http.listen(port, () => {
+httpServer.listen(port, () => {
   console.log(`Server started on: http://localhost:${port}`);
 });

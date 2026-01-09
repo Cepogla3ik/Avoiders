@@ -19,10 +19,6 @@ export default class Area {
     this._gameWorld = gameWorld;
     this._body = new Body(0, 0);
 
-    const player = new Player(undefined, this._gameWorld);
-    this._players.add(player);
-    this._entities.add(player);
-
     this._segments.add(new Segment(100, 200, this));
   }
 
@@ -38,7 +34,7 @@ export default class Area {
           }
         }
       }
-          
+      
       for (let j = i + 1; j < entities.length; j++) {
         const entity2 = entities[j];
         // if (entity2.isDestroyed) continue;
@@ -86,6 +82,15 @@ export default class Area {
       );
     }
 
-    for (const player of this._players) console.log(player);
+    const entitiesNetData = [];
+    for (const entity of entities) entitiesNetData.push(entity.getFullNetData());
+    for (const player of this._players) player.send(entitiesNetData, {
+      segments: [{ position: { x: 0, y: 0 }, width: 100, height: 200 }]
+    });
+  }
+
+  addPlayer(player: Player) {
+    this._players.add(player);
+    this._entities.add(player);
   }
 }

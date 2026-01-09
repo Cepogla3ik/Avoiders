@@ -17,6 +17,9 @@ export default class GameWorld {
   
   private running: boolean = false;
   get isRunning() { return this.running; }
+
+  private __lastPlayerId: number = 0;
+  public getNextPlayerId() { return this.__lastPlayerId++; }
   
   private players: Set<Player> = new Set();
   // TODO
@@ -66,6 +69,7 @@ export default class GameWorld {
 
   addPlayer(player: Player) {
     this.players.add(player);
+    this._area.addPlayer(player);
   }
 
   removePlayer(player: Player) {
