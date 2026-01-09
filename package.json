@@ -4,12 +4,11 @@
   "main": "server/server.ts",
   "type": "module",
   "scripts": {
-    "start": "tsx src/server/main.ts",
+    "start": "tsx --tsconfig tsconfig.server.json src/server/main.ts",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "a": "tsx --tsconfig tsconfig.server.json src/server/main.ts"
+    "preview": "vite preview"
   },
   "keywords": [],
   "author": "",
