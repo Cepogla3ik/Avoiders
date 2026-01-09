@@ -1,77 +1,34 @@
-console.log("TODO");
+import express from "express";
+import { createServer } from "http";
+import path from "path";
+import { WebSocketServer } from "ws";
+import GameWorld from "./GameWorld/GameWorld.ts";
+import Player from "./GameWorld/entities/Player/Player.ts";
+import { fileURLToPath } from "url";
 
-/*import 'dotenv/config';
-import express, { type Application } from 'express';
-import path from 'path';
-import { createServer, Server as HttpServer } from 'http';
-import { Server } from 'socket.io';
-import { MongoClient, Db } from 'mongodb';
-import bcrypt from 'bcrypt';
+const port = process.env.PORT || 8000;
 
-const saltRounds: number = 10;
-const app: Application = express();
-const http: HttpServer = createServer(app);
-const io: Server = new Server(http, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
-});
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const port: string | number = process.env.PORT || 3000;
-const uri: string = process.env.MONGO_URI || '';
-
-if (!uri) {
-  throw new Error("MONGO_URI is not defined in .env file");
-}
-
-const client: MongoClient = new MongoClient(uri);
-let db: Db;
-
-async function connectToDB(): void {
-  try {
-    await client.connect();
-    db = client.db('avoiders_game');
-    console.log("✅ DataBase MongoDB was connected");
-  } catch (err) {
-    console.error("❌ DataBase wasn't connected", err);
-  }
-}
-connectToDB();
+const app = express();
+const httpServer = createServer(app);
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../dist')));
+app.use(express.static(path.join(__dirname, '../../dist')));
 
-// interface configs and types in classes and export ?
-type PlayerRank = "player" | "supporter" | "jr-mod" | "mod" | "sr-mod" | "dev";
-type EnemyType = "normal";
+const wss = new WebSocketServer({ server: httpServer, path: "/ws" });
 
-interface PlayerConfig {
-  id: string;
-  x: number;
-  y: number;
-  username: string;
-  isAlive?: boolean;
-  inGame?: boolean;
-  rank: PlayerRank;
-  color: string;
-}
-interface EnemyConfig {
-  id: string;
-  x: number;
-  y: number;
-  type: EnemyType;
-  radius: number;
-  speed: number;
-}
+const gameWorld = new GameWorld();
+gameWorld.run();
 
-const players: Record<string, PlayerConfig> = {};
-const enemies: Record<string, EnemyConfig> = {};
+wss.on("connection", (ws) => {
+  const player = new Player(ws, gameWorld);
 
-for (let n = 1; n <= 15; n++) {
-  new Enemy("normal", getRandomInt(10, 50), getRandomInt(0.5, 4));
-}
- // ?
-Enemy.allEnemies.forEach(enemy => {
-  enemies[enemy.id] = enemy;
-});*/
+  // socket.on("input", () => player.onInput());
+  ws.on("close", () => player.onDisconnect());
+})
+
+httpServer.listen(port, () => {
+  console.log(`Server started on: http://localhost:${port}`);
+});

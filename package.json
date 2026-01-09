@@ -4,7 +4,7 @@
   "main": "server/server.ts",
   "type": "module",
   "scripts": {
-    "start": "tsx src/server/main.ts",
+    "start": "tsx --tsconfig tsconfig.server.json src/server/main.ts",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
@@ -21,8 +21,7 @@
     "mongodb": "^7.0.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "socket.io": "^4.8.3",
-    "socket.io-client": "^4.8.3"
+    "ws": "^8.19.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
@@ -32,7 +31,7 @@
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
-    "@types/socket.io": "^3.0.1",
+    "@types/ws": "^8.18.1",
     "@vitejs/plugin-react-swc": "^4.2.2",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
