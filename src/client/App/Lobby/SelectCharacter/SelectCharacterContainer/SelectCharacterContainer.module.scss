@@ -1,0 +1,31 @@
+.select-character-container {
+  position: absolute;
+  display: flex;
+  top: 200px;
+  width: 60%;
+  min-width: 200px;
+  min-height: 275px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  justify-content: center;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: hsl(270 30% 12.5%);
+  border-radius: 24px;
+  padding-inline: 20px;
+  padding-block: 15px;
+  pointer-events: none;
+}
+@media (max-width: 1080px) {
+  .select-character-container {
+    max-width: calc(180px * 2 + 20px + 40px); 
+    justify-content: center;
+  }
+}
+@media (max-width: 715px) {
+  .select-character-container {
+    max-width: calc(180px + 30px);
+  }
+}

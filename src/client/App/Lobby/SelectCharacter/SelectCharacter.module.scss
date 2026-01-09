@@ -1,0 +1,13 @@
+.select-character {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: hsl(270 25% 13.5%);
+  display: none; /* flex */
+  justify-content: center;
+  align-items: center;
+  z-index: 500;
+}

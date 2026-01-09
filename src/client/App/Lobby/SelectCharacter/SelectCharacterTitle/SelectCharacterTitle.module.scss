@@ -1,0 +1,18 @@
+.select-character-title {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 150px;
+  font-size: 54px;
+  font-weight: 700;
+  color: hsl(270 70% 42.5%);
+  text-shadow: 0 0 48px hsl(270 70% 45%);
+  font-family: Georgia;
+  user-select: none;
+  z-index: 1500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}

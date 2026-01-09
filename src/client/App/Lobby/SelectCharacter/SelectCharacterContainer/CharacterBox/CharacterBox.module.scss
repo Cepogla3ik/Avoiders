@@ -1,0 +1,32 @@
+.character-box {
+  position: relative;
+  min-width: 180px;
+  aspect-ratio: 4 / 3;
+  flex: 0 1 calc((100% - 40px) / 3);
+  max-width: calc((100% - 40px) / 3);
+  background-color: hsl(270 45% 30%);
+  border-radius: 16px;
+  border: 3.5px solid hsl(270 45% 20%);
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+.character-hero {
+  position: absolute;
+  top: 7.5%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.75rem;
+  font-weight: 600;
+  font-family: sans-serif;
+  color: hsl(270 55% 20%);
+}
+.character-circle {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 28%;
+  aspect-ratio: 1 / 1;
+  background-color: hsl(270 45% 25%);
+  border-radius: 50%;
+}
