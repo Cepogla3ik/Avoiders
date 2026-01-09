@@ -59,6 +59,10 @@ body {
   }
 }
 
+// Cursor
+*, *::before, *::after {
+  cursor: url("../../public/cursor.png"), auto;
+}
 
 // Main styles
 input:-webkit-autofill,
@@ -83,6 +87,7 @@ body, html {
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: url("../../public/cursor.png"), auto;
 
   &::-webkit-scrollbar {
     width: 14px;
