@@ -1,15 +1,11 @@
-import Title from "./Lobby/Home/Title/Title";
-import Form from "./Lobby/Home/Form/Form";
-import Additions from "./Lobby/Home/Additions/Additions";
+import Home from "./Lobby/Home/Home";
 import Engine from "./Game/Engine/Engine";
 import Cursor from "./Cursor/Cursor";
 
 export default function App() {
   return (
     <>
-      <Title />
-      <Form />
-      <Additions />
+      <Home />
       <Engine />
       <Cursor />
     </>
