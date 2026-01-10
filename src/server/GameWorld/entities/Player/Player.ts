@@ -36,7 +36,7 @@ export default class Player extends Entity<PlayerNetData> {
   }
 
   onCollision(object: GameObject): void {
-    if (object instanceof Segment) this._body.resolveBodyCollision(object.body, object.shape)
+    if (object instanceof Segment) this._body.resolveBodyCollision(object.body, object.shape);
   }
 
   getFullNetData(): PlayerNetData {
