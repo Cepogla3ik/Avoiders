@@ -7,10 +7,10 @@ import { CollisionMask } from "@server/GameWorld/physics/CollisionMask.ts";
 import Body from "@server/GameWorld/physics/Body.ts";
 import type GameObject from "@server/GameWorld/GameObject.ts";
 import Segment from "@server/GameWorld/Area/segments/Segment.ts";
-import type { EntityNetData, PlayerNetData } from "@shared/types/NetData.ts";
+import type { PlayerNetData } from "@shared/types/NetData.ts";
 import { EntityTypes } from "@shared/EntityTypes.ts";
-import type { AreaConfig } from "@shared/types/AreaConfig.ts";
 import type { GameWorldUpdate } from "@shared/types/GameWorldUpdate.ts";
+import Vec2 from "@shared/util/Vec2.ts";
 
 export default class Player extends Entity<PlayerNetData> {
   private _socket: WebSocket;
@@ -19,14 +19,19 @@ export default class Player extends Entity<PlayerNetData> {
   private _inputs: IPlayerInput[] = [];
 
   constructor(socket: WebSocket, gameWorld: GameWorld) {
-    super(new Body(0, 0, new CircleShape(0.5).setMask(CollisionMask.AREA_FLOOR)), gameWorld.getNextPlayerId(), EntityTypes.Player); // TODO
+    super(new Body(0, 0, new CircleShape(0.5).setMask(CollisionMask.AREA_FLOOR)), { // TODO
+      id: gameWorld.getNextPlayerId(),
+      type: EntityTypes.Player,
+      position: new Vec2(0, 0)
+    });
+
     this._socket = socket;
     this._gameWorld = gameWorld;
 
-    gameWorld.addPlayer(this);
+    this._gameWorld.addPlayer(this);
   }
 
-  update(delta: number): void {
+  update(_delta: number): void {
     this._body.velocity.set(0.01, -0.01);
   }
 
@@ -42,9 +47,10 @@ export default class Player extends Entity<PlayerNetData> {
     }
   }
 
-  send(entitiesNetData: EntityNetData[], areaConfig: AreaConfig) {
-    this._socket.send(JSON.stringify({
-      entities: entitiesNetData,
+  // Socket
+  send(entitiesNetData?: GameWorldUpdate["entities"], areaConfig?: GameWorldUpdate["area"]) {
+    if (this._socket.readyState === this._socket.OPEN) this._socket.send(JSON.stringify({
+      entities: entitiesNetData && entitiesNetData.length ? entitiesNetData : undefined,
       area: areaConfig
     } satisfies GameWorldUpdate));
   }

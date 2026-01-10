@@ -1,7 +1,7 @@
 import type { AreaConfig } from "./AreaConfig";
-import type { EntityNetData } from "./NetData";
+import type { EntityNetData, ImmutableNetDataProps } from "./NetData";
 
 export interface GameWorldUpdate {
   area?: AreaConfig;
-  entities?: EntityNetData[];
+  entities?: (Partial<Omit<EntityNetData, ImmutableNetDataProps>> & Pick<EntityNetData, ImmutableNetDataProps>)[];
 }

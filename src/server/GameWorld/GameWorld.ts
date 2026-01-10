@@ -21,7 +21,11 @@ export default class GameWorld {
   private __lastPlayerId: number = 0;
   public getNextPlayerId() { return this.__lastPlayerId++; }
   
-  private players: Set<Player> = new Set();
+  private _newPlayers: Set<Player> = new Set();
+  private _removedPlayers: Set<Player> = new Set();
+  private _players: Set<Player> = new Set();
+  get players(): ReadonlySet<Player> { return this._players; }
+
   // TODO
   private _area: Area = new Area(this);
 
@@ -35,6 +39,16 @@ export default class GameWorld {
   }
 
   private update(delta: number) {
+    for (const player of this._newPlayers) {
+      this._players.add(player);
+      player.addToArea(this._area);
+    }
+    this._newPlayers.clear();
+
+    for (const player of this._removedPlayers) this._players.delete(player);
+    this._removedPlayers.clear();
+
+
     this._area.update(delta);
   }
 
@@ -68,11 +82,10 @@ export default class GameWorld {
   }
 
   addPlayer(player: Player) {
-    this.players.add(player);
-    this._area.addPlayer(player);
+    this._newPlayers.add(player);
   }
 
   removePlayer(player: Player) {
-    this.players.delete(player);
+    this._players.delete(player);
   }
 }
