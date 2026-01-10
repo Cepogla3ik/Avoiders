@@ -1,6 +1,6 @@
 import type { WebSocket } from "ws";
 import type GameWorld from "@server/GameWorld/GameWorld.ts";
-import type { IPlayerInput } from "@shared/types/player.ts";
+import type { PlayerInput } from "@shared/types/player.ts";
 import Entity from "../Entity.ts";
 import CircleShape from "@server/GameWorld/physics/shapes/CircleShape.ts";
 import { CollisionMask } from "@server/GameWorld/physics/CollisionMask.ts";
@@ -11,12 +11,16 @@ import type { PlayerNetData } from "@shared/types/NetData.ts";
 import { EntityTypes } from "@shared/EntityTypes.ts";
 import type { GameWorldUpdate } from "@shared/types/GameWorldUpdate.ts";
 import Vec2 from "@shared/util/Vec2.ts";
+import IsValidPlayerInput from "@server/util/IsValidPlayerInput.ts";
+
+export type ServerPlayerInput = Omit<PlayerInput, "direction"> & { direction: Vec2 };
 
 export default class Player extends Entity<PlayerNetData> {
   private _socket: WebSocket;
   private _gameWorld: GameWorld;
 
-  private _inputs: IPlayerInput[] = [];
+  private _input?: ServerPlayerInput;
+  // TODO: maybe use: private _inputs: IPlayerInput[] = [];
 
   constructor(socket: WebSocket, gameWorld: GameWorld) {
     super(new Body(0, 0, new CircleShape(0.5).setMask(CollisionMask.AREA_FLOOR)), { // TODO
@@ -32,7 +36,15 @@ export default class Player extends Entity<PlayerNetData> {
   }
 
   update(_delta: number): void {
-    this._body.velocity.set(0.01, -0.01);
+    if (this._input) {
+      this._body.velocity.set(this._input.direction).mulLocal(10);
+      console.log(this._body.velocity, this._input.direction, this.body.position)
+    }
+    this.updateNetData();
+  }
+
+  updateNetData() {
+    this._netData.set("position", this._body.position.toObject());
   }
 
   onCollision(object: GameObject): void {
@@ -54,8 +66,21 @@ export default class Player extends Entity<PlayerNetData> {
       area: areaConfig
     } satisfies GameWorldUpdate));
   }
-  onInput(input: IPlayerInput) {
-    this._inputs.push(input);
+  onInput(input: PlayerInput) {
+    if (!IsValidPlayerInput(input)) return;
+
+    const direction = new Vec2(input.direction);
+    if (direction.length() > 1) direction.normalize();
+
+    if (!this._input) {
+      this._input = {
+        direction: direction
+      }
+    } else {
+      this._input.direction.set(direction);
+    }
+    /* this._inputs.push(input);
+    if (this._inputs.length >= 100) this._inputs.shift(); */
   }
   onDisconnect() {}
 }

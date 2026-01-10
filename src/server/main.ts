@@ -25,7 +25,13 @@ gameWorld.run();
 wss.on("connection", (ws) => {
   const player = new Player(ws, gameWorld);
 
-  // socket.on("input", () => player.onInput());
+  ws.on("message", (e) => {
+    try {
+      player.onInput(JSON.parse(String(e)));
+    } catch {
+      ws.close();
+    }
+  });
   ws.on("close", () => player.onDisconnect());
 })
 

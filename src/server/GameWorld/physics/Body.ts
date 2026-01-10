@@ -24,8 +24,9 @@ export default class Body {
   }
 
   update(delta: number) {
-    this.position.x += this.velocity.x * delta;
-    this.position.y += this.velocity.y * delta;
+    console.log(delta);
+    this.position.x += this.velocity.x * delta / 1000;
+    this.position.y += this.velocity.y * delta / 1000;
   }
 
   checkCollision(target: Body, shape: Shape | undefined = target.shape, includeBoxAngle: boolean = false, ignoreOutFill: boolean = false) {
