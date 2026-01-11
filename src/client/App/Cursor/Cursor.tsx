@@ -11,7 +11,7 @@ export default function Cursor() {
       position.current.y = e.clientY;
   
       if (cursorRef.current) cursorRef.current.style.transform = `translate3d(${position.current.x}px, ${position.current.y}px, 0)`;
-    }
+    };
 
     window.addEventListener("mousemove", mouseMove);
     return () => window.removeEventListener("mousemove", mouseMove);

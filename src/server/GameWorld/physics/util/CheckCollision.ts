@@ -24,7 +24,7 @@ export class CheckCollisionUtil {
       return (distX * distX + distY * distY) <= circleRadius**2;
   }
 
-  static checkBoxBoxCollision(a: Body, shapeA: BoxShape, b: Body, shapeB: BoxShape, ignoreOutFill: Boolean = false): Boolean {
+  static checkBoxBoxCollision(a: Body, shapeA: BoxShape, b: Body, shapeB: BoxShape, ignoreOutFill: boolean = false): boolean {
       const aMin = a.position.add(shapeA.offset);
       const aMax = aMin.add(shapeA.width, shapeA.height);
       const bMin = b.position.add(shapeB.offset);
@@ -35,12 +35,12 @@ export class CheckCollisionUtil {
       else return aMin.x <= bMax.x && aMax.x >= bMin.x && aMin.y <= bMax.y && aMax.y >= bMin.y;
   }
 
-  static checkCircleCircleCollision(a: Body, shapeA: CircleShape, b: Body, shapeB: CircleShape): Boolean {
+  static checkCircleCircleCollision(a: Body, shapeA: CircleShape, b: Body, shapeB: CircleShape): boolean {
     const dist = a.position.sub(b.position).length();
     return dist <= shapeA.radius + shapeB.radius;
   }
 
-  static checkCircleBoxCollision(circleBody: Body, circleShape: CircleShape, boxBody: Body, boxShape: BoxShape, includeBoxAngle: Boolean = false, ignoreOutFill: Boolean = false): Boolean {
+  static checkCircleBoxCollision(circleBody: Body, circleShape: CircleShape, boxBody: Body, boxShape: BoxShape, includeBoxAngle: boolean = false, ignoreOutFill: boolean = false): boolean {
     /* circleBody.position // Позиция круга
     circleShape.radius // r
     boxBody.position + boxShape.offset; // Позиция левого верхнего угла прямоугольника

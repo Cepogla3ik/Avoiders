@@ -70,7 +70,7 @@ export class ResolveCollisionUtil {
         static resolveCircleCircleCollision(bodyA: Body, shapeA: CircleShape, bodyB: Body, shapeB: CircleShape): Vec2 | null {
           const displacement = bodyB.position.sub(bodyA.position);
           const distance = displacement.normalize();
-          if (distance == 0) return null;
+          if (distance === 0) return null;
 
           const overlap = shapeA.radius + shapeB.radius - distance;
           if (overlap > 0) {

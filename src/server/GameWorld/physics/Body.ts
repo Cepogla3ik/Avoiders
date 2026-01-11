@@ -24,8 +24,9 @@ export default class Body {
   }
 
   update(delta: number) {
-    this.position.x += this.velocity.x * delta;
-    this.position.y += this.velocity.y * delta;
+    console.log(delta);
+    this.position.x += this.velocity.x * delta / 1000;
+    this.position.y += this.velocity.y * delta / 1000;
   }
 
   checkCollision(target: Body, shape: Shape | undefined = target.shape, includeBoxAngle: boolean = false, ignoreOutFill: boolean = false) {
@@ -41,7 +42,7 @@ export default class Body {
     ResolveCollision(this, this.shape, target, shape);
   }
 
-  canCollide(body: Body): Boolean {
+  canCollide(body: Body) {
     if (!this.shape || !body.shape || (this.isStatic && body.isStatic) || (this.shape.isSensor && body.shape.isSensor)) return false;
     return this.position.distance(body.position) <= Math.ceil(this.shape?.getRadius() + body.shape?.getRadius());
   }
