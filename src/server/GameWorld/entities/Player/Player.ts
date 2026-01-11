@@ -38,7 +38,7 @@ export default class Player extends Entity<PlayerNetData> {
   update(_delta: number): void {
     if (this._input) {
       this._body.velocity.set(this._input.direction).mulLocal(10);
-      console.log(this._body.velocity, this._input.direction, this.body.position)
+      console.log(this._body.velocity, this._input.direction, this.body.position);
     }
     this.updateNetData();
   }
@@ -56,15 +56,15 @@ export default class Player extends Entity<PlayerNetData> {
       id: this.id,
       type: this.type,
       position: this._body.position
-    }
+    };
   }
 
   // Socket
   send(entitiesNetData?: GameWorldUpdate["entities"], areaConfig?: GameWorldUpdate["area"]) {
-    if (this._socket.readyState === this._socket.OPEN) this._socket.send(JSON.stringify({
+    if (this._socket.readyState === this._socket.OPEN) {this._socket.send(JSON.stringify({
       entities: entitiesNetData && entitiesNetData.length ? entitiesNetData : undefined,
       area: areaConfig
-    } satisfies GameWorldUpdate));
+    } satisfies GameWorldUpdate));}
   }
   onInput(input: PlayerInput) {
     if (!IsValidPlayerInput(input)) return;
@@ -75,7 +75,7 @@ export default class Player extends Entity<PlayerNetData> {
     if (!this._input) {
       this._input = {
         direction: direction
-      }
+      };
     } else {
       this._input.direction.set(direction);
     }

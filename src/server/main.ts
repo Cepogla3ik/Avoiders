@@ -33,7 +33,7 @@ wss.on("connection", (ws) => {
     }
   });
   ws.on("close", () => player.onDisconnect());
-})
+});
 
 httpServer.listen(port, () => {
   console.log(`Server started on: http://localhost:${port}`);

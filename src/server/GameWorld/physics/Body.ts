@@ -42,7 +42,7 @@ export default class Body {
     ResolveCollision(this, this.shape, target, shape);
   }
 
-  canCollide(body: Body): Boolean {
+  canCollide(body: Body) {
     if (!this.shape || !body.shape || (this.isStatic && body.isStatic) || (this.shape.isSensor && body.shape.isSensor)) return false;
     return this.position.distance(body.position) <= Math.ceil(this.shape?.getRadius() + body.shape?.getRadius());
   }

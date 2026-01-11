@@ -10,6 +10,7 @@ export interface EntityNetData {
   removed?: boolean;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface PlayerNetData extends EntityNetData {
-
+  // TODO
 }

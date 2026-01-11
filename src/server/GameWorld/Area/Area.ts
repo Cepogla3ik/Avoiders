@@ -89,8 +89,8 @@ export default class Area {
     for (let iteration = 0; iteration < TOTAL_ITERATIONS; iteration++) {
       this.physicsStep(delta, entities,
         FIRST_VELOCITY_ITERATION <= iteration && iteration <= LAST_VELOCITY_ITERATION,
-        iteration == LAST_ITERATION,
-        iteration == FIRST_VELOCITY_ITERATION
+        iteration === LAST_ITERATION,
+        iteration === FIRST_VELOCITY_ITERATION
       );
     }
   }
@@ -126,7 +126,7 @@ export default class Area {
     }
   }
   
-  private physicsStep(delta: number, entities: Entity[], isVelocityStep: Boolean = false, isLastStep: Boolean = false, _isFirstStep: Boolean = false) {
+  private physicsStep(delta: number, entities: Entity[], isVelocityStep: boolean = false, isLastStep: boolean = false, _isFirstStep: boolean = false) {
     for (let i = 0; i < entities.length; i++) {
       const entity = entities[i];
       if (entity.area !== this || entity.isDestroyed) continue;
@@ -146,12 +146,12 @@ export default class Area {
         if (entity2.area !== this || entity2.isDestroyed) continue;
         // if (entity2.isDestroyed) continue;
         
-        if (entity.body.shape) for (const sensor of entity2.body.sensors) {
+        if (entity.body.shape) {for (const sensor of entity2.body.sensors) {
           if (CheckCollision(entity2.body, sensor, entity.body, entity.body.shape)) entity2.onSensorCollision(sensor, entity);
-        }
-        if (entity2.body.shape) for (const sensor of entity.body.sensors) {
+        }}
+        if (entity2.body.shape) {for (const sensor of entity.body.sensors) {
           if (CheckCollision(entity.body, sensor, entity2.body, entity2.body.shape)) entity.onSensorCollision(sensor, entity);
-        }
+        }}
 
         if (!(entity.body.isStatic && entity2.body.isStatic) && entity.body.shape && entity2.body.shape) {
           if ((entity.body.shape.isCanCollide(entity2.body.shape) || entity2.body.shape.isCanCollide(entity.body.shape)) && entity.body.canCollide(entity2.body)) {
