@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@client/*": ["./src/client/*"],
+      "@server/*": ["./src/server/*"],
+      "@shared/*": ["./src/shared/*"]
+    },
+    "strict": true,
+    "erasableSyntaxOnly": true,
+    "noUncheckedSideEffectImports": true
+  }
+}
