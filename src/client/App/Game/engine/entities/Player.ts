@@ -1,4 +1,4 @@
-import type { EntityNetData, PlayerNetData } from "@shared/types/NetData";
+import type { PlayerNetData } from "@shared/types/NetData";
 import Entity from "./Entity";
 
 export default class Player extends Entity {
