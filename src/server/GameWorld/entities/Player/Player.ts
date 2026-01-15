@@ -9,7 +9,7 @@ import type GameObject from "@server/GameWorld/GameObject.ts";
 import Segment from "@server/GameWorld/Area/segments/Segment.ts";
 import type { PlayerNetData } from "@shared/types/NetData.ts";
 import { EntityTypes } from "@shared/EntityTypes.ts";
-import type { GameWorldUpdate } from "@shared/types/GameWorldUpdate.ts";
+import type { GameUpdate } from "@shared/types/GameUpdate.ts";
 import Vec2 from "@shared/util/Vec2.ts";
 import IsValidPlayerInput from "@server/util/IsValidPlayerInput.ts";
 
@@ -60,11 +60,17 @@ export default class Player extends Entity<PlayerNetData> {
   }
 
   // Socket
-  send(entitiesNetData?: GameWorldUpdate["entities"], areaConfig?: GameWorldUpdate["area"]) {
-    if (this._socket.readyState === this._socket.OPEN) {this._socket.send(JSON.stringify({
-      entities: entitiesNetData && entitiesNetData.length ? entitiesNetData : undefined,
-      area: areaConfig
-    } satisfies GameWorldUpdate));}
+  private firstSend: boolean = true;
+  send(entitiesNetData?: GameUpdate["entities"], areaConfig?: GameUpdate["area"]) {
+    if (this._socket.readyState === this._socket.OPEN) {
+      this._socket.send(JSON.stringify({
+        id: this.firstSend ? this.id : undefined,
+        entities: entitiesNetData && entitiesNetData.length ? entitiesNetData : undefined,
+        area: areaConfig
+      } satisfies GameUpdate));
+
+      this.firstSend = false;
+    }
   }
   onInput(input: PlayerInput) {
     if (!IsValidPlayerInput(input)) return;
