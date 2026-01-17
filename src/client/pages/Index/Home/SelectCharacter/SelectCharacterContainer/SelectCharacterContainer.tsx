@@ -15,6 +15,6 @@ export default function SelectCharacterContainer() {
       <SelectCharacterBox hero="Medic" boxColor="hsl(330 45% 30%)" circleColor="hsl(330 45% 20%)" />
       <SelectCharacterBox hero="Engineer" boxColor="hsl(290 45% 30%)" circleColor="hsl(290 45% 20%)" />
       <SelectCharacterBox hero="Infiltrator" boxColor="hsl(240 15% 30%)" circleColor="hsl(240 15% 20%)" /> */}
-</div>
+    </div>
   );
 }

@@ -1,6 +1,6 @@
-import styles from "./Form.module.scss";
+import styles from "./AuthenticationForm.module.scss";
 
-export default function Form() {
+export default function AuthenticationForm() {
   return (
     <div className={styles["authentication-container"]}>
       <form>

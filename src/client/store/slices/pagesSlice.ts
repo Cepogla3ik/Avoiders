@@ -2,13 +2,13 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 interface PagesState {
     game: boolean;
-    lobby: boolean;
+    home: boolean;
     sellectCharacter: boolean;
 }
 
 const initialState: PagesState = {
     game: false,
-    lobby: false,
+    home: false,
     sellectCharacter: false,
 };
 
@@ -18,7 +18,7 @@ const pagesSlice = createSlice({
     reducers: {
         setPagesState: (state, action: PayloadAction<Partial<PagesState>>) => {
             state.game = action.payload.game ?? state.game;
-            state.lobby = action.payload.lobby ?? state.lobby;
+            state.home = action.payload.home ?? state.home;
         }
     }
 });
