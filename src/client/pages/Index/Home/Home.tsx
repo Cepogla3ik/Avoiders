@@ -11,10 +11,7 @@ export default function Home() {
 
   function handleContextMenu(e: React.MouseEvent) {
     e.stopPropagation(); 
-
-    if ((e.target as HTMLElement).classList.contains(styles["home"])) {
-      e.preventDefault();
-    }
+    e.preventDefault();
   }
 
   return (
